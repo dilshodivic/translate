@@ -20,8 +20,8 @@ public class Database {
     public static void initTable() {
         String word = "create table if not exists word ( \n" +
                 "             id serial primary key,\n" +
-                "             english varchar(20) not null,\n" +
-                "             uzbek varchar(20) not null,\n" +
+                "             english varchar,\n" +
+                "             uzbek varchar,\n" +
                 "             description varchar(80),\n" +
                 "             created_date timestamp not null default now());";
 

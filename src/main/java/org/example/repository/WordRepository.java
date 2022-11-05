@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.db.Database;
+import org.example.dto.Questions;
 import org.example.dto.Word;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,6 @@ import java.util.*;
 
 @Repository
 public class WordRepository {
-
 
 
     public Word getWordByName(String word) {
@@ -28,7 +28,7 @@ public class WordRepository {
                 String description = resultSet.getString("description");
                 LocalDateTime created_date = resultSet.getTimestamp("created_date").toLocalDateTime();
 
-     Word wordAdd = new Word();
+                Word wordAdd = new Word();
                 wordAdd.setId(id);
                 wordAdd.setWord(english);
                 wordAdd.setUzbek(uzbek);
@@ -54,7 +54,7 @@ public class WordRepository {
                             "values (?,?,?)");
             statement.setString(1, wordAdd.getWord());
             statement.setString(2, wordAdd.getUzbek());
-            statement.setString(3,wordAdd.getDescription());
+            statement.setString(3, wordAdd.getDescription());
 
 
             int n = statement.executeUpdate();
@@ -80,9 +80,7 @@ public class WordRepository {
     }
 
 
-
-
-    private List<Word> getTransactions(ResultSet resultSet)  {
+    private List<Word> getTransactions(ResultSet resultSet) {
         List<Word> wordList = new LinkedList<>();
         try {
             while (resultSet.next()) {
@@ -92,10 +90,10 @@ public class WordRepository {
                 wordlistAdd.setUzbek(resultSet.getString("uzbek"));
                 wordlistAdd.setDescription(resultSet.getString("description"));
                 wordlistAdd.setLocalDateTime(resultSet.getTimestamp("created_date").toLocalDateTime());
-            wordList.add(wordlistAdd);
+                wordList.add(wordlistAdd);
             }
             return wordList;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -104,7 +102,7 @@ public class WordRepository {
     public List<Word> search(String word) {
         try (Connection connection = Database.getConnection()) {
             Statement statement = connection.createStatement();
-            String query = ("select * from word where english ilike '%"+word+"%'");
+            String query = ("select * from word where english ilike '%" + word + "%'");
             ResultSet resultSet = statement.executeQuery(query);
 
             return getTransactions(resultSet);
@@ -120,7 +118,7 @@ public class WordRepository {
             Connection connection = Database.getConnection();
             String sql = String.format("Delete from word where id = '%d'", id);
             Statement statement = connection.createStatement();
-              return   statement.executeUpdate(sql);
+            return statement.executeUpdate(sql);
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         }
@@ -128,26 +126,19 @@ public class WordRepository {
     }
 
 
-
     public Word getWordBy(String text) {
         try {
             Connection connection = Database.getConnection();
-            String sql = String.format("Select english from word where uzbek = '%s'", text);
+            String sql = ("Select english from word where uzbek ilike '" + text + "%'");
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
 
                 String english = resultSet.getString("english");
-
                 Word wordAdd = new Word();
-
                 wordAdd.setWord(english);
-
                 return wordAdd;
-
             }
-
-
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         }
@@ -155,22 +146,18 @@ public class WordRepository {
     }
 
 
-
-
-
     public Word equalsWord(String english) {
         try (Connection connection = Database.getConnection()) {
 
             Statement statement = connection.createStatement();
-            String query = ("select * from word where english ilike '"+english+"'");
+            String query = ("select * from word where english ilike '" + english + "'");
             ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()){
+            while (resultSet.next()) {
 
-            Word word = new Word();
-            word.setWord(resultSet.getString("english"));
+                Word word = new Word();
+                word.setWord(resultSet.getString("english"));
                 return word;
             }
-
 
 
         } catch (SQLException e) {
@@ -183,14 +170,15 @@ public class WordRepository {
 
     public List<Word> getAnswerList() {
         try (Connection connection = Database.getConnection()) {
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("select uzbek from word ");
+            String sql = String.format("Select uzbek from word");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
 
-        return getAnswer(resultSet);
-    } catch (SQLException e) {
-        e.printStackTrace();
-        System.exit(-1);
-    }
+            return getAnswer(resultSet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
         return null;
     }
 
@@ -203,8 +191,33 @@ public class WordRepository {
                 wordList.add(wordlistAdd);
             }
             return wordList;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Word translateUzb(String text) {
+        try {
+            Connection connection = Database.getConnection();
+            String sql = ("Select uzbek from word where english ilike '" + text + "%'");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+
+                String uzbek = resultSet.getString("uzbek");
+
+                Word wordAdd = new Word();
+
+                wordAdd.setUzbek(uzbek);
+
+                return wordAdd;
+
+            }
+
+
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
         }
         return null;
     }

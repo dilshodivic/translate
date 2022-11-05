@@ -8,16 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.Map;
-import java.util.Random;
-import java.util.Scanner;
 
 @Controller
 public class WordController {
     @Autowired
     private WordService wordService;
-
-    @Autowired
-    private WordRepository wordRepository;
     public void start() {
 
         boolean game = true;
@@ -33,6 +28,7 @@ public class WordController {
                 case 5 -> searchWord();
                 case 6 -> deleteById();
                 case 7 -> spelling();
+                case 8 -> uzbTrans();
                 case 0 -> {
                     game = false;
                     System.out.println("error operation, please enter again!");
@@ -42,25 +38,30 @@ public class WordController {
 
 
     }
-    public void randomUz(){
+
+    private void uzbTrans() {
+        System.out.print("Enter english: ");
+        String text = ScannerUtil.SCANNER_STR.nextLine();
+        wordService.translateUzb(text);
+    }
+
+    public void randomUz() {
         Word random = wordService.randomUz();
 
         System.out.println(random.getUzbek());
     }
-    public void randomEng(){
+    public Word randomEng() {
         Word word = wordService.randomEng();
-        System.out.println(word.getWord());
+        return word;
     }
-
     private void spelling() {
         randomUz();
         System.out.print("Enter english: ");
-        String english = ScannerUtil.SCANNER_STR.nextLine();
+        String english = ScannerUtil.SCANNER_STR.nextLine().trim();
         wordService.equalsWord(english);
 
 
     }
-
     private void deleteById() {
         wordList();
         System.out.print("Enter id ");
@@ -68,58 +69,51 @@ public class WordController {
         wordService.deleted(id);
 
     }
-
     private void searchWord() {
         System.out.print("Enter word: ");
         String word = ScannerUtil.SCANNER_STR.nextLine();
         wordService.searchWord(word);
     }
-
     private void translate() {
         System.out.print("Enter uzbek: ");
         String text = ScannerUtil.SCANNER_STR.nextLine();
         wordService.translate(text);
     }
-
     private void multipleChoice() {
-        randomEng();
-
+        Word word = randomEng();
+        System.out.println(word.getWord());
+//        char c = ScannerUtil.SCANNER_CHAR.next().charAt(0);
         wordService.answer();
 
-        System.out.print("Enter answer: ");
-        String answer = ScannerUtil.SCANNER_STR.nextLine();
-
 
     }
-
     private void wordList() {
+
         wordService.showWord();
     }
-
     private void addWord() {
         System.out.print("Enter english word: ");
-        String word = ScannerUtil.SCANNER_STR.nextLine();
+        String word = ScannerUtil.SCANNER_STR.nextLine().trim().toLowerCase();
         System.out.print("Enter uzbek word: ");
-        String translate = ScannerUtil.SCANNER_STR.nextLine();
+        String translate = ScannerUtil.SCANNER_STR.nextLine().trim();
         System.out.print("Enter description: ");
         String description = ScannerUtil.SCANNER_STR.nextLine();
 
 
-        wordService.addWord(word,translate,description);
-
+        wordService.addWord(word, translate, description);
 
 
     }
-
     public void menu() {
         System.out.println("*******Menu*******");
         System.out.println("1.Add word");
         System.out.println("2.Word List");
         System.out.println("3.Multiple choice");
-        System.out.println("4.Translate");
+        System.out.println("4.Eng translate");
         System.out.println("5.Searching");
         System.out.println("6.Delete by id");
         System.out.println("7.Spelling");
+        System.out.println("8.Uzb translate");
         System.out.println("0.Log out");
     }
 }

@@ -1,9 +1,9 @@
 package org.example.service;
 
+import org.example.dto.Questions;
 import org.example.dto.Word;
 import org.example.repository.WordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,6 +14,9 @@ import java.util.*;
 public class WordService {
     @Autowired
     private WordRepository wordRepository;
+
+    private Questions questions = new Questions();
+
 
     public void addWord(String word, String translate, String description) {
         Word exists = wordRepository.getWordByName(word);
@@ -33,7 +36,7 @@ public class WordService {
 
         if (n != 0) {
             System.out.println("Word successfully added");
-            return;
+
         } else {
             System.out.println("ERROR");
         }
@@ -54,7 +57,7 @@ public class WordService {
 
         if (wordByName != null) {
             System.out.println("Word  not exists");
-            return;
+
         } else {
             List<Word> words = wordRepository.search(word);
             words.forEach(System.out::println);
@@ -76,6 +79,10 @@ public class WordService {
 
     public void translate(String text) {
         Word byName = wordRepository.getWordBy(text);
+        if (byName == null) {
+            System.out.println("Can not found");
+            return;
+        }
         System.out.println("English translate -> " + byName.getWord());
 
 
@@ -107,36 +114,37 @@ public class WordService {
         return word;
     }
 
-
     public void answer() {
-        List<Word> words = wordRepository.getAnswerList();
-        Collections.shuffle(words);
-        List<Character> characters = List.of('A','B','C','D');
+
+        List<Word> answerList = wordRepository.getAnswerList();
+        Collections.shuffle(answerList);
 
         for (int i = 0; i < 4; i++) {
 
-            System.out.print( characters.get(i)+ ")");
+//            System.out.print( characters.get(i)+ ")");
             String b = "";
-            String a = words.get(i).getUzbek();
-            if (a.equals(b)){
+            String a = answerList.get(i).getUzbek();
+            questions.setList(answerList);
+            if (a.equals(b)) {
                 continue;
             }
             System.out.println(a);
             b = a;
 
         }
+        System.out.println(questions.getList());
 
-     /*   for (char i = 65; i < 69; i++) {
-            System.out.print(i + ")");
-            String b = "";
+    }
 
-            String a = words.get(i).getUzbek();
-            if (a.equals(b)){
-                continue;
-            }
-//            System.out.println(words.get(random.nextInt(0,words.size())).getUzbek());
-            System.out.println(a);
-            b = a;
-        }*/ //TODO estalik
+
+    public void translateUzb(String text) {
+        Word byName = wordRepository.translateUzb(text);
+        if (byName == null) {
+            System.out.println("Can not found");
+            return;
+        }
+        System.out.println("Uzbek translate -> " + byName.getUzbek());
     }
 }
+
+

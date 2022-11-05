@@ -56,9 +56,6 @@ public class Word {
         return "Word{" +
                 "id=" + id +
                 ", word='" + word + '\'' +
-                ", uzbek='" + uzbek + '\'' +
-                ", description='" + description + '\'' +
-                ", localDateTime=" + localDateTime +
-                '}';
+                ",           uzbek='" + uzbek + '\'';
     }
 }
